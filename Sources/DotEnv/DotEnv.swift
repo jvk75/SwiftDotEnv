@@ -19,9 +19,8 @@ public struct DotEnv {
     public func loadDotEnvFile(filename: String) {
 
         let path = getAbsolutePath(relativePath: "/\(filename)", useFallback: false)
-        if let path = path, let contents = try? NSString(contentsOfFile: path, encoding: String.Encoding.utf8.rawValue) {
-
-            let lines = String(describing: contents).characters.split { $0 == "\n" || $0 == "\r\n" }.map(String.init)
+        if let path = path, let contents = try? String(contentsOfFile: path, encoding: String.Encoding.utf8) {
+            let lines = contents.components(separatedBy: .newlines)
             for line in lines {
                 // ignore comments
                 if line[line.startIndex] == "#" {
@@ -34,7 +33,7 @@ public struct DotEnv {
                 }
 
                 // extract key and value which are separated by an equals sign
-                let parts = line.characters.split(separator: "=", maxSplits: 1).map(String.init)
+                let parts = line.characters.split(separator: "=", maxSplits: 1).map({ String($0) })
 
                 let key = parts[0].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
                 var value = parts[1].trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
